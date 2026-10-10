@@ -1,55 +1,55 @@
-# Write a Python program to create an attendance management system.
+import speech_recognition as sr
+import webbrowser
+import pyttsx3
+import musiclibrary
+
+recognizer = sr.Recognizer()
+engine = pyttsx3.init()
+
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
 
 
-FileName = 'Students.txt'  # This is student file  
+def processCommand(c):
+    if "open google" in c.lower():
+        webbrowser.open("https://google.com")
+    elif "open youtube" in c.lower():
+        webbrowser.open("https://youtube.com")
+    elif "open tiktok" in c.lower():
+        webbrowser.open("https://tiktok.com")
+    
+    elif c.lower().startswith("play"):
+        song = c.lower().split(" ")[1]
+        link = musiclibrary.music[song]
+        webbrowser.open(link)
 
 
-def attendance(): # main dunction 
-    try:
-        name = input('Enter student name: ') # input name from user
-        roll_no = input('Enter student Roll no:') # input roll no from user
+if __name__ == "__main__": 
 
-        found = False  # conditional flag
+    speak("initializing javris ")
+    while True:
+        # wake word   
+        r= sr.Recognizer()
+            
+        print("recognizing...")
+        try:
+            with sr.Microphone() as source:
+                print("listening.. ")
+                audio = r.listen(source , timeout= 2 , phrase_time_limit= 1 )
+            word = r.recognize_google(audio)
+            if (word.lower() == "jarvis"):
+                speak("yes sir ")
 
-        with open(FileName , 'r') as file: # open file with read mode
-           
-            for line in file: # check every line of file 
-                if roll_no in line and name in line: # if roll no and name match 
-                    found = True  # flag becomes True
-                    break
-        if found:
-            print(f'Roll no {roll_no}.{name} is present!') # when flag True run this         
-        else:
-            print(f'Roll no {roll_no}.{name} is absent!') # else this line 
+                # listen for command 
+                with sr.Microphone() as source:
+                    print("jarvis active..") 
+                    audio = r.listen(source)
+                    command = r.recognize_google(audio)
+ 
+                    processCommand( command)
 
-    except FileNotFoundError: # error hanndling .
-        print('Student is NOT admitted in School yet!') 
-
-
-
-#  main menu
-while True:
-    print('\n---- main menu ----\n')
-    print('1. Student Attendace.')
-    print('2. Exit')
-    choice = input('Enter your choice: ') # input choice from user
-    # checks conditions from user input
-    if choice == '1':
-        attendance()
-    elif choice == '2':
-        print('Exited..')
-        break
-    else:
-        print('Invalid choice...\nTry again!')
-
-
-
-
-
-
-
-
-
-
-
-
+        except sr.UnknownValueError:
+            print("it could not undersand audio")
+        except Exception as e:
+            print("Error :{0}".format(e))
